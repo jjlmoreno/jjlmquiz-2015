@@ -48,9 +48,7 @@ exports.new = function(req, res) {
 exports.create = function(req, res) {
 	var quiz = models.Quiz.build( req.body.quiz );
 
-	quiz
-	.validate()
-	.then(
+	quiz.validate().then(
 		function(err){
 			if (err) {
 				res.render('quizes/new', {quiz: quiz, errors: err.errors});

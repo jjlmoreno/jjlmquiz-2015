@@ -12,6 +12,9 @@ var routes = require('./routes/index');
 
 var app = express();
 
+// Tiempo máximo para logout sin actividad
+//  2 minutos * 60 segundos/minuto * 1000 milisegundos/segundo
+var timeLogout = 120000  
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -28,6 +31,18 @@ app.use(cookieParser('Ad3f3Qiz1520'));
 app.use(session());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Middleware para Auto-Logout
+app.use(function(req, res, next){
+    if (req.session.user) {
+        if (Date.now() - req.session.user.lastTimeAction > timeLogout) {
+            delete req.session.user;
+        }else  {
+            req.session.user.lastTimeAction = Date.now();
+        }
+    }
+    next();
+});
 
 // Helpers dinámicos:
 app.use(function(req, res, next){
